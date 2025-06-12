@@ -64,10 +64,10 @@
     <h1>Sedition. Matcher</h1>
   </header>
 
-  <label>Box A: one pilot per line</label>
+  <label>Pilots with Remote Sensor Boosters: one pilot per line</label>
   <textarea id="inputA" placeholder="PilotAlpha"></textarea>
 
-  <label>Box B: one pilot per line</label>
+  <label>Logistics/Specialty Pilots: one pilot per line</label>
   <textarea id="inputB" placeholder="PilotBravo"></textarea>
 
   <button onclick="matchDistribute()">Generate Matches</button>
@@ -78,20 +78,42 @@
     const parseLines = txt =>
       txt.split('\n').map(s => s.trim()).filter(s => s);
 
+    function shuffleArray(arr) {
+      const array = arr.slice();
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
     function matchDistribute() {
       const A = parseLines(document.getElementById('inputA').value);
       const B = parseLines(document.getElementById('inputB').value);
       const results = [];
-      let idx = 0;
+
+      if (B.length === 0) {
+        document.getElementById('results').innerText = "Box B cannot be empty.";
+        return;
+      }
+
+      let bPool = shuffleArray(B);
+      let bIndex = 0;
 
       A.forEach(name => {
         const assigned = [];
+
         for (let i = 0; i < 3; i++) {
-          assigned.push(B[(idx + i) % B.length]);
+          if (bIndex >= bPool.length) {
+            bPool = shuffleArray(B);
+            bIndex = 0;
+          }
+          assigned.push(bPool[bIndex]);
+          bIndex++;
         }
+
         const paddedName = name.padEnd(15, ' ');
         results.push(`${paddedName}| ${assigned.join(', ')}`);
-        idx = (idx + 1) % B.length;
       });
 
       document.getElementById('results').innerText = results.join('\n');
