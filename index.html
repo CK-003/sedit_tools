@@ -23,15 +23,15 @@
       font-size: 2em;
       letter-spacing: 1px;
     }
-    textarea {
+    textarea, input[type=number] {
       width: 100%;
-      height: 150px;
       background: #1e1e1e;
       border: none;
       padding: 10px;
       margin-bottom: 10px;
       color: #e0e0e0;
       resize: vertical;
+      font-family: monospace;
     }
     button {
       background: #bb2424;
@@ -64,11 +64,14 @@
     <h1>Sedition. Matcher</h1>
   </header>
 
-  <label>Pilots with Remote Sensor Boosters: one pilot per line</label>
+  <label>Box A: one pilot per line</label>
   <textarea id="inputA" placeholder="PilotAlpha"></textarea>
 
-  <label>Logistics/Specialty Pilots: one pilot per line</label>
+  <label>Box B: one pilot per line</label>
   <textarea id="inputB" placeholder="PilotBravo"></textarea>
+
+  <label>Number of matches per pilot in Box A:</label>
+  <input type="number" id="matchCount" min="1" max="20" value="3" />
 
   <button onclick="matchDistribute()">Generate Matches</button>
 
@@ -90,10 +93,11 @@
     function matchDistribute() {
       const A = parseLines(document.getElementById('inputA').value);
       const B = parseLines(document.getElementById('inputB').value);
+      const matchCount = parseInt(document.getElementById('matchCount').value, 10);
       const results = [];
 
-      if (B.length === 0) {
-        document.getElementById('results').innerText = "Box B cannot be empty.";
+      if (B.length === 0 || isNaN(matchCount) || matchCount < 1) {
+        document.getElementById('results').innerText = "Check that Box B is not empty and match count is a valid number.";
         return;
       }
 
@@ -103,7 +107,7 @@
       A.forEach(name => {
         const assigned = [];
 
-        for (let i = 0; i < 1; i++) {
+        for (let i = 0; i < matchCount; i++) {
           if (bIndex >= bPool.length) {
             bPool = shuffleArray(B);
             bIndex = 0;
