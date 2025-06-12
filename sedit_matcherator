@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>📊 Alliance Matcher — Sedition.</title>
+  <style>
+    body {
+      background: #121212;
+      color: #e0e0e0;
+      font-family: "Helvetica Neue", Arial, sans-serif;
+      padding: 20px;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    header img {
+      height: 60px;
+      margin-right: 15px;
+    }
+    header h1 {
+      font-size: 2em;
+      letter-spacing: 1px;
+    }
+    textarea {
+      width: 100%;
+      height: 150px;
+      background: #1e1e1e;
+      border: none;
+      padding: 10px;
+      margin-bottom: 10px;
+      color: #e0e0e0;
+      resize: vertical;
+    }
+    button {
+      background: #bb2424;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      cursor: pointer;
+      font-size: 1em;
+      border-radius: 4px;
+      transition: background .2s;
+    }
+    button:hover {
+      background: #d33b3b;
+    }
+    .results {
+      margin-top: 20px;
+      background: #1e1e1e;
+      padding: 15px;
+      white-space: pre-wrap;
+      border-radius: 4px;
+      max-height: 300px;
+      overflow-y: auto;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="https://images.evetech.net/alliances/99009845/logo?size=128" alt="Alliance Logo">
+    <h1>Sedition. Matcher</h1>
+  </header>
+
+  <label>Box A: one pilot per line</label>
+  <textarea id="inputA" placeholder="PilotAlpha"></textarea>
+
+  <label>Box B: one pilot per line</label>
+  <textarea id="inputB" placeholder="PilotBravo"></textarea>
+
+  <button onclick="matchDistribute()">Generate Matches</button>
+
+  <div class="results" id="results"></div>
+
+  <script>
+    const parseLines = txt =>
+      txt.split('\n').map(s => s.trim()).filter(s => s);
+
+    function matchDistribute() {
+      const A = parseLines(document.getElementById('inputA').value);
+      const B = parseLines(document.getElementById('inputB').value);
+      const results = [];
+      let idx = 0;
+
+      A.forEach(name => {
+        const assigned = [];
+        for (let i = 0; i < 3; i++) {
+          assigned.push(B[(idx + i) % B.length]);
+        }
+        const paddedName = name.padEnd(15, ' ');
+        results.push(`${paddedName}| ${assigned.join(', ')}`);
+        idx = (idx + 1) % B.length;
+      });
+
+      document.getElementById('results').innerText = results.join('\n');
+    }
+  </script>
+</body>
+</html>
